@@ -1,3 +1,5 @@
+import addZeroToDigit from "./addZeroToDigit";
+
 const changeDate = (UTCDate, ago = false, fullMonth = false) => {
   const convertToNum = (num) => {
     return parseInt(num, 10);
@@ -50,20 +52,22 @@ const changeDate = (UTCDate, ago = false, fullMonth = false) => {
   const currentSeconds = now.getSeconds();
 
   if (!UTCDate) {
-    return `${currentDate} ${
+    return `${addZeroToDigit(currentDate)} ${
       shortMonthsList[convertToNum(currentMonth)]
-    }, ${currentYear} - ${currentHour}:${currentMinute}`;
+    }, ${currentYear} - ${addZeroToDigit(currentHour)}:${addZeroToDigit(
+      currentMinute
+    )}`;
   }
 
   if (!ago) {
     if (!fullMonth) {
-      return `${day} ${
+      return `${addZeroToDigit(day)} ${
         shortMonthsList[convertToNum(month)]
-      }, ${year} - ${hours}:${minutes}`;
+      }, ${year} - ${addZeroToDigit(hours)}:${addZeroToDigit(minutes)}`;
     } else {
-      return `${day} ${
+      return `${addZeroToDigit(day)} ${
         monthsList[convertToNum(month)]
-      }, ${year} - ${hours}:${minutes}`;
+      }, ${year} - ${addZeroToDigit(hours)}:${addZeroToDigit(minutes)}`;
     }
   }
 

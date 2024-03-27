@@ -5,32 +5,26 @@ import { toggleInitialState } from "../../redux/slice/toggleSlice";
 import GroupChatForm from "./components/SidebarMenu/components/GroupChatForm";
 import SearchUsers from "../../components/SearchUsers";
 import UpdateGroupChatForm from "./components/ChatRoom/components/UpdateGroupChatForm";
-import ListeningSocket from "../../components/ListeningSocket";
 import RightClickMenu from "./components/ChatRoom/components/RightClickMenu";
 import DeleteChat from "../../hooks/mutation/DeleteChat";
-
-import HandleSocket from "./components/HandleSocket/HandleSocket";
 import { InitialDataState } from "../../redux/slice/InitialDataSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Toastify from "../../lib/Toastify";
+import { useLocation } from "react-router-dom";
 
 const Home = () => {
   const { rooms } = useSelector(InitialDataState);
   const [filterRooms, setFilterRooms] = useState([]);
   const [activeRoom, setActiveRoom] = useState(null);
 
-  useEffect(() => {
-    setFilterRooms(rooms);
-  }, [rooms]);
-
   const { groupChatForm, updateGroupChat, showChatOptions } =
     useSelector(toggleInitialState);
 
   const searchValue = (value) => {
     if (!value) {
-      setFilterRooms(rooms);
+      setFilterRooms([]);
       return;
     }
-
     const findGroupChat = rooms.filter((room) =>
       room.name?.toLowerCase().includes(value.toLowerCase())
     );
@@ -42,7 +36,6 @@ const Home = () => {
           member.name.toLowerCase().includes(value.toLowerCase())
         )
     );
-    console.log("findChats", findChats);
     const combine = [...findGroupChat, ...findChats];
     setFilterRooms(combine);
   };
@@ -61,7 +54,7 @@ const Home = () => {
           {/* MARK: SIDEBAR MENU */}
           <div className="w-full flex-1">
             <SidebarMenu
-              rooms={filterRooms}
+              rooms={filterRooms.length > 0 ? filterRooms : rooms}
               activeRoomSelected={activeRoomSelected}
               activeRoom={activeRoom}
             />

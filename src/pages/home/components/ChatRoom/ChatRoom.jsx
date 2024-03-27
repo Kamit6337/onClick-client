@@ -10,11 +10,14 @@ import ChatRoomHeader from "./components/ChatRoomHeader";
 import DifferentChatMessages from "./components/DifferentChatMessages";
 import Toastify from "../../../../lib/Toastify";
 import { InitialDataState } from "../../../../redux/slice/InitialDataSlice";
+import useSocketConnection from "../../../../hooks/socket/useSocketConnection";
+import ChatMessage from "./components/ChatMessages";
 
 const ChatRoom = ({ activeRoom }) => {
   const divRef = useRef(null);
   const { chats } = useSelector(InitialDataState);
   const { ToastContainer, showErrorMessage } = Toastify();
+  const { emit } = useSocketConnection();
 
   const { isLoading, isError, error, data } = UseRoomChat({
     toggle: false,
@@ -60,11 +63,11 @@ const ChatRoom = ({ activeRoom }) => {
         room: activeRoom._id,
       };
 
-      // emit("chatMessage", res, (response) => {
-      //   if (response.status !== "ok") {
-      //     showErrorMessage({ message: response.error });
-      //   }
-      // });
+      emit("chatMessage", res, (response) => {
+        if (response.status !== "ok") {
+          showErrorMessage({ message: response.error });
+        }
+      });
 
       reset({ inputChat: "" });
     }
@@ -100,14 +103,14 @@ const ChatRoom = ({ activeRoom }) => {
 
         {/* MARK: CHAT MESSAGES AREA */}
         <div
-          className=" overflow-y-scroll p-6 flex flex-col gap-4 w-full"
+          className=" overflow-y-scroll p-6 mobile:px-1 flex flex-col gap-4 w-full"
           ref={divRef}
           style={{ height: "calc(100% - 112px)" }}
         >
           {chatMessages?.length > 0 ? (
             chatMessages.map((chat, i) => {
               return (
-                <DifferentChatMessages
+                <ChatMessage
                   key={i}
                   chat={chat}
                   isGroupChat={activeRoom?.isGroupChat}

@@ -2,6 +2,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  sideNavbar: false,
+  singleChatForm: false,
   groupChatForm: false,
   updateGroupChat: false,
   showChatOptions: {
@@ -25,13 +27,23 @@ const ToggleSlice = createSlice({
 
       return { ...state, showChatOptions: { data, bool } };
     },
+    toggleSingleChatForm: (state, { payload }) => {
+      state.singleChatForm = payload;
+      return state;
+    },
+    toggleSideNavbar: (state, { payload }) => {
+      state.sideNavbar = payload;
+      return state;
+    },
   },
 });
 
 export const {
+  toggleSingleChatForm,
   toggleGroupChatForm,
   toggleUpdateGroupChatForm,
   toggleChatOptionOnRightClick,
+  toggleSideNavbar,
 } = ToggleSlice.actions;
 
 export const ToggleReducer = ToggleSlice.reducer;

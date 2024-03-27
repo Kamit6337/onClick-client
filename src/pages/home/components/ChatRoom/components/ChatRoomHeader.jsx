@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { resetActiveRoom } from "../../../../../redux/slice/roomSlice";
 import { Icons } from "../../../../../assets/icons";
@@ -9,6 +9,8 @@ import { toggleUpdateGroupChatForm } from "../../../../../redux/slice/toggleSlic
 import DeleteSingleChat from "../../../../../hooks/mutation/DeleteSingleChat";
 import DeleteGroupChat from "../../../../../hooks/mutation/DeleteGroupChat";
 import Toastify from "../../../../../lib/Toastify";
+import { deleteReq } from "../../../../../utils/api/api";
+import { deleteRoomWithItsChats } from "../../../../../redux/slice/InitialDataSlice";
 
 const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
   const dispatch = useDispatch();
@@ -17,16 +19,13 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
   const [deleteOption, setDeleteOption] = useState("Delete");
   const { ToastContainer, showErrorMessage } = Toastify();
 
-  const {
-    mutate: mutateSingleChat,
-    error: errorSingleChat,
-    reset: resetSingleChat,
-  } = DeleteSingleChat(activeRoom);
-  const {
-    mutate: mutateGroupChat,
-    error: errorGroupChat,
-    reset: resetGroupChat,
-  } = DeleteGroupChat(activeRoom);
+  const filterChatMessages = useMemo(() => {
+    if (!chatMessages) return [];
+
+    const filter = chatMessages.filter((chat) => !chat.isLabel);
+
+    return filter;
+  }, [chatMessages]);
 
   useEffect(() => {
     if (
@@ -40,35 +39,15 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
     }
   }, [activeRoom, user]);
 
-  useEffect(() => {
-    if (errorGroupChat) {
-      showErrorMessage({ message: errorGroupChat.message, time: 5000 });
-      setTimeout(() => {
-        resetGroupChat();
-      }, 5000);
-    }
-
-    if (errorSingleChat) {
-      showErrorMessage({ message: errorSingleChat.message, time: 5000 });
-      setTimeout(() => {
-        resetSingleChat();
-      }, 5000);
-    }
-  }, [
-    errorSingleChat,
-    errorGroupChat,
-    showErrorMessage,
-    resetGroupChat,
-    resetSingleChat,
-  ]);
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
     console.log("delete room");
-    dispatch(resetActiveRoom());
-    if (activeRoom.isGroupChat) {
-      mutateGroupChat(activeRoom);
-    } else {
-      mutateSingleChat(activeRoom);
+    try {
+      await deleteReq("/room/single", {
+        id: activeRoom._id,
+      });
+      dispatch(deleteRoomWithItsChats(activeRoom._id));
+    } catch (error) {
+      console.log("error in deleting room", error);
     }
   };
 
@@ -88,12 +67,14 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
             <p className="text-xs">{activeRoom?.members.length} members</p>
           </div>
         ) : (
-          <p className="w-60">
+          <p className="w-60 mobile:w-max">
             {activeRoom?.members?.find((id) => id !== user.id).name}
           </p>
         )}
 
-        <p className="mr-40">Total Chat : {chatMessages?.length}</p>
+        <p className="mr-40 mobile:mr-0 whitespace-nowrap">
+          Total Chat : {filterChatMessages.length}
+        </p>
         <div className="relative">
           <p
             className="rounded-full hover:bg-color_2 cursor-pointer p-2"

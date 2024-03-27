@@ -11,7 +11,7 @@ import DownloadImage from "../../../../../hooks/query/DownloadImage";
 
 const SERVER_URL = environment.SERVER_URL;
 
-const DifferentChatMessages = ({ chat, isGroupChat }) => {
+const DifferentChatMessages = ({ chat, isGroupChat = false }) => {
   const dispatch = useDispatch();
   const { data: user } = UseContinuousCheck(true);
 

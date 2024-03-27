@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { postAuthReq } from "../../utils/api/authApi";
 import { useMutation } from "@tanstack/react-query";
 import environment from "../../utils/environment";
 import validator from "validator";
-import createCookies from "../../utils/crypto/createCookies";
-import isUserLoggedIn from "../../utils/crypto/isUserLoggedIn";
 import Toastify from "../../lib/Toastify";
 
 const SERVER_URL = environment.SERVER_URL;
@@ -15,12 +13,8 @@ const SERVER_URL = environment.SERVER_URL;
 const Login = () => {
   const navigate = useNavigate();
   const [togglePassword, setTogglePassword] = useState(false);
-  const { loggedIn } = isUserLoggedIn();
-
-  const { state } = useLocation();
-
-  const [oAuthLoginState, setOAuthLoginState] = useState(state || null);
-  console.log("state from login", state);
+  const searchParamas = useSearchParams()[0];
+  const message = searchParamas.get("msg");
 
   const { ToastContainer, showErrorMessage, showSuccessMessage } = Toastify();
 
@@ -42,34 +36,22 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (loggedIn) {
-      navigate("/");
-    }
-  }, [loggedIn, navigate]);
-
-  useEffect(() => {
     if (isError) {
       showErrorMessage({ message: error.message });
     }
   }, [isError, error, showErrorMessage]);
 
   useEffect(() => {
-    if (oAuthLoginState) {
-      showErrorMessage({ message: oAuthLoginState.message });
-      setOAuthLoginState(null);
+    if (message) {
+      showErrorMessage({ message: message });
     }
-  }, [oAuthLoginState, showErrorMessage]);
+  }, [message, showErrorMessage]);
 
   useEffect(() => {
     if (isSuccess) {
-      showSuccessMessage({ message: "Successfully Logged In.", time: 2000 });
-      createCookies();
-
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      navigate("/", { state: { msg: "Successfully Logged In." } });
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, navigate, showSuccessMessage]);
 
   const onSubmit = async (data) => {
     mutate(data);

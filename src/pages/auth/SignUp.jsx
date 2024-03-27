@@ -60,12 +60,7 @@ const SignUp = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      createCookies();
-      showSuccessMessage({ message: "Successfully Logged In.", time: 2000 });
-
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      navigate("/", { state: { msg: "Successfully Logged In." } });
     }
   }, [isSuccess, navigate]);
 

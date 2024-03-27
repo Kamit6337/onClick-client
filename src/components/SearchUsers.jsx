@@ -7,8 +7,11 @@ import environment from "../utils/environment";
 import UseSingleRoomCreation from "../hooks/mutation/SingleRoomCreation";
 import Toastify from "../lib/Toastify";
 import { Icons } from "../assets/icons";
+import { useDispatch } from "react-redux";
+import { toggleSideNavbar } from "../redux/slice/toggleSlice";
 
 const SearchUsers = ({ searchValue }) => {
+  const dispatch = useDispatch();
   const [searchUsers, setSearchUsers] = useState([]);
   const { data: users } = UseAllUser(true);
   const { isError, error, mutate, isSuccess } = UseSingleRoomCreation();
@@ -53,7 +56,10 @@ const SearchUsers = ({ searchValue }) => {
 
   return (
     <div className="w-full h-full flex justify-center items-center gap-4">
-      <p className="text-2xl text-gray-300">
+      <p
+        className="text-2xl text-gray-300 cursor-pointer"
+        onClick={() => dispatch(toggleSideNavbar(true))}
+      >
         <Icons.hamburger />
       </p>
       <div>

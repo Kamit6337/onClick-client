@@ -38,8 +38,10 @@ import {
   MdOutlineSubscriptions,
   MdOutlineHistory,
 } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
 
 export const Icons = {
+  profile: CgProfile,
   downArrow: IoIosArrowDown,
   setting: AiOutlineSetting,
   search: AiOutlineSearch,

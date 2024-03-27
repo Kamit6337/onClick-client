@@ -79,7 +79,7 @@ const SidebarMenu = ({ rooms, activeRoomSelected, activeRoom }) => {
           <p className="text-xs">Search the user to create chat.</p>
         </div>
       )}
-      <div className="absolute z-50 bottom-0 mb-8 ml-8">
+      <div className="absolute z-40 bottom-0 mb-8 ml-8">
         <ChatType />
       </div>
     </div>
