@@ -1,24 +1,31 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Images } from "../../../../../assets/images";
-import { useDispatch } from "react-redux";
-import { toggleGroupChatForm } from "../../../../../redux/slice/toggleSlice";
-import SearchFilterUsers from "../../../../../components/SearchFilterUsers";
-import UseContinuousCheck from "../../../../../hooks/query/UseContinuousCheck";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleUpdateGroupChatForm } from "../../../redux/slice/toggleSlice";
+import SearchFilterUsers from "../../../components/SearchFilterUsers";
+import UseContinuousCheck from "../../../hooks/query/UseContinuousCheck";
 import { useForm } from "react-hook-form";
-import environment from "../../../../../utils/environment";
-import CreateGroupChat from "../../../../../hooks/mutation/CreateGroupChat";
-import Toastify from "../../../../../lib/Toastify";
-import UseAllUser from "../../../../../hooks/query/UseAllUser";
-import ImageComp from "../../../../../components/Image";
-import ImageCrop from "../../ImageCrop/ImageCrop";
+import environment from "../../../utils/environment";
+import Toastify from "../../../lib/Toastify";
+import ImageComp from "../../../lib/Image";
+import UseAllUser from "../../../hooks/query/UseAllUser";
+import UpdateGroupChat from "../../../hooks/mutation/updateGroupChat";
+import ImageCrop from "../../../components/ImageCrop";
+import { InitialDataState } from "../../../redux/slice/InitialDataSlice";
 
-const GroupChatForm = () => {
+const UpdateGroupChatForm = () => {
   const dispatch = useDispatch();
   const { data: userData } = UseContinuousCheck(true);
   const { data: users } = UseAllUser(true);
-  const [list, setList] = useState([userData]);
-  const [initialUsers, setInitialUsers] = useState(users?.data || []);
+  const { activeRoom, rooms } = useSelector(InitialDataState);
+  const [activeRoomDetail, setActiveRoomDetail] = useState(null);
+  const [initialUsers, setInitialUsers] = useState([]);
+  const [list, setList] = useState([]);
+
+  const [isCropStart, setIsCropStart] = useState(false);
+  const [originalImageFile, setOriginalImageFile] = useState(null);
+  const [croppedImageSrc, setCroppedImageSrc] = useState(null);
+
   const {
     mutate,
     isError,
@@ -26,14 +33,21 @@ const GroupChatForm = () => {
     reset,
     isSuccess,
     data: mutateData,
-  } = CreateGroupChat();
-
-  const [isCropStart, setIsCropStart] = useState(false);
-  const [originalImageFile, setOriginalImageFile] = useState(null);
-  const [croppedImageSrc, setCroppedImageSrc] = useState(null);
+  } = UpdateGroupChat(activeRoom);
 
   const { Image, file } = ImageComp();
   const { ToastContainer, showErrorMessage, showSuccessMessage } = Toastify();
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset: resetFormName,
+  } = useForm({
+    defaultValues: {
+      name: "",
+    },
+  });
 
   useEffect(() => {
     if (file) {
@@ -42,19 +56,9 @@ const GroupChatForm = () => {
     }
   }, [file]);
 
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
-    defaultValues: {
-      name: "",
-    },
-  });
-
   useEffect(() => {
     if (isSuccess) {
-      dispatch(toggleGroupChatForm(false));
+      dispatch(toggleUpdateGroupChatForm(false));
     }
   }, [isSuccess, showSuccessMessage, dispatch, mutateData, reset]);
 
@@ -67,6 +71,23 @@ const GroupChatForm = () => {
       }, 3000);
     }
   }, [isError, error, showErrorMessage, reset]);
+
+  useEffect(() => {
+    if (activeRoom) {
+      const findRoom = rooms.find((room) => room._id === activeRoom);
+      const members = findRoom.members;
+      setList(members);
+      resetFormName({ name: findRoom.name });
+      setActiveRoomDetail(findRoom);
+
+      members.forEach((member) => {
+        const filterUsers = users?.data.filter(
+          (user) => user._id !== member._id
+        );
+        setInitialUsers(filterUsers);
+      });
+    }
+  }, [rooms, activeRoom, users]);
 
   const userSelected = (user) => {
     setList((prev) => [...prev, user]);
@@ -93,20 +114,19 @@ const GroupChatForm = () => {
       return;
     }
 
-    if (!croppedImageSrc) {
-      showErrorMessage({
-        message: "Please select an image for your group",
-        time: 3000,
-      });
-      return;
-    }
-
     const membersId = list.map((user) => user._id);
 
     const formData = new FormData();
-    formData.append("image", croppedImageSrc);
+    formData.append("id", activeRoom);
     formData.append("name", name);
+    formData.append("admin", activeRoomDetail.admin._id);
     formData.append("members", JSON.stringify(membersId));
+
+    if (croppedImageSrc) {
+      formData.append("image", croppedImageSrc);
+      mutate(formData);
+      return;
+    }
 
     mutate(formData);
   };
@@ -120,6 +140,8 @@ const GroupChatForm = () => {
     setOriginalImageFile(null);
     setIsCropStart(false);
   };
+
+  const groupPhoto = `${environment.SERVER_URL}/${activeRoomDetail?.photo}`;
 
   return (
     <>
@@ -152,7 +174,7 @@ const GroupChatForm = () => {
                 src={
                   croppedImageSrc
                     ? URL.createObjectURL(croppedImageSrc)
-                    : Images.dummyGroup
+                    : groupPhoto
                 }
                 alt="groupPhoto"
               />
@@ -204,7 +226,7 @@ const GroupChatForm = () => {
 
           <div className="h-16 w-full flex justify-between items-center gap-6 p-5">
             <button
-              onClick={() => dispatch(toggleGroupChatForm(false))}
+              onClick={() => dispatch(toggleUpdateGroupChatForm(false))}
               className="flex-1 py-2 flex justify-center items-center -outline-offset-1 outline-color_3  bg-color_2 rounded-xl cursor-pointer text-lg tracking-wide"
             >
               Cancel
@@ -214,7 +236,7 @@ const GroupChatForm = () => {
               type="submit"
               className="flex-1 py-2 flex justify-center items-center -outline-offset-1 outline-color_3  bg-color_2 rounded-xl cursor-pointer text-lg tracking-wide"
             >
-              Create Group Chat
+              Update Group Chat
             </button>
           </div>
 
@@ -232,4 +254,4 @@ const GroupChatForm = () => {
   );
 };
 
-export default GroupChatForm;
+export default UpdateGroupChatForm;

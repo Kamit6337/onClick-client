@@ -2,9 +2,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  singleChatForm: {
+    bool: false,
+  },
+  groupChatForm: {
+    bool: false,
+  },
   sideNavbar: false,
-  singleChatForm: false,
-  groupChatForm: false,
   updateGroupChat: false,
   showChatOptions: {
     bool: false,
@@ -16,8 +20,15 @@ const ToggleSlice = createSlice({
   name: "ToggleSlice",
   initialState,
   reducers: {
+    toggleSingleChatForm: (state, { payload }) => {
+      const { bool } = payload;
+      state.singleChatForm.bool = bool;
+      return state;
+    },
     toggleGroupChatForm: (state, { payload }) => {
-      return { ...state, groupChatForm: payload };
+      const { bool } = payload;
+      state.groupChatForm.bool = bool;
+      return state;
     },
     toggleUpdateGroupChatForm: (state, { payload }) => {
       return { ...state, updateGroupChat: payload };
@@ -26,10 +37,6 @@ const ToggleSlice = createSlice({
       const { bool, data } = payload;
 
       return { ...state, showChatOptions: { data, bool } };
-    },
-    toggleSingleChatForm: (state, { payload }) => {
-      state.singleChatForm = payload;
-      return state;
     },
     toggleSideNavbar: (state, { payload }) => {
       state.sideNavbar = payload;

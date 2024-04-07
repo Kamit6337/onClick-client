@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import Loading from "../../components/Loading";
+import Loading from "../../containers/Loading";
 import { postAuthReq } from "../../utils/api/authApi";
 import { useMutation } from "@tanstack/react-query";
 import environment from "../../utils/environment";

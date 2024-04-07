@@ -6,6 +6,7 @@ import {
   InitialDataState,
   addNewChat,
   addNewRoom,
+  deleteRoomWithItsChats,
 } from "../../redux/slice/InitialDataSlice";
 
 const useSocketConnection = () => {
@@ -45,10 +46,16 @@ const useSocketConnection = () => {
       dispatch(addNewRoom({ room, chat }));
     };
 
-    socket.on("chatMessage", handleChatMessage);
-    socket.on("singleRoom", handleSingleRoom);
+    const handleDeleteRoom = (data) => {
+      const { roomId } = data;
+      dispatch(deleteRoomWithItsChats(roomId));
+    };
 
-    () => {
+    socket.on("chatMessage", handleChatMessage);
+    socket.on("addRoom", handleSingleRoom);
+    socket.on("deleteRoom", handleDeleteRoom);
+
+    return () => {
       socket?.off("chatMessage", handleChatMessage);
       socket?.off("singleRoom", handleSingleRoom);
     };

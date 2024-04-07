@@ -4,13 +4,13 @@ import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
 import InsertPhotoOutlinedIcon from "@mui/icons-material/InsertPhotoOutlined";
 import { useEffect } from "react";
-import SpeedDial from "../../../../../components/SpeedDial";
-import SelectImageFile from "../../../../../lib/SelectImageFile";
-import ShowToastifyError from "../../../../../components/ShowToastifyError";
+import SpeedDial from "../../../components/SpeedDial";
+import SelectImageFile from "../../../lib/SelectImageFile";
+import ShowToastifyError from "../../../components/ShowToastifyError";
 import { useSelector } from "react-redux";
-import { roomsState } from "../../../../../redux/slice/roomSlice";
-import SelectPdfFile from "../../../../../lib/SelectPdfFile";
-import SendChatFile from "../../../../../hooks/mutation/SendChatFile";
+import SelectPdfFile from "../../../lib/SelectPdfFile";
+import SendChatFile from "../../../hooks/mutation/SendChatFile";
+import { InitialDataState } from "../../../redux/slice/InitialDataSlice";
 
 const actions = [
   { id: 1, icon: <FileCopyIcon />, name: "Copy" },
@@ -29,7 +29,7 @@ export default function ChatMediaMessage() {
     Input: PDFInput,
   } = SelectPdfFile();
 
-  const { activeRoom } = useSelector(roomsState);
+  const { activeRoom } = useSelector(InitialDataState);
 
   const imageMutation = SendChatFile({ fileType: "image" });
   const pdfMutation = SendChatFile({ fileType: "pdf" });

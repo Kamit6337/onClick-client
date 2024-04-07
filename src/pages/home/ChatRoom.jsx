@@ -1,29 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
-import UseSocket from "../../../../hooks/socket/UseSocket";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import Loading from "../../../../components/Loading";
-import ChatMediaMessage from "./components/ChatMediaMessage";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import ChatMediaMessage from "./ChatRoom/ChatMediaMessage";
 import { useSelector } from "react-redux";
-import UseRoomChat from "../../../../hooks/query/UseRoomChat";
-import ChatRoomHeader from "./components/ChatRoomHeader";
-import DifferentChatMessages from "./components/DifferentChatMessages";
-import Toastify from "../../../../lib/Toastify";
-import { InitialDataState } from "../../../../redux/slice/InitialDataSlice";
-import useSocketConnection from "../../../../hooks/socket/useSocketConnection";
-import ChatMessage from "./components/ChatMessages";
+import ChatRoomHeader from "./ChatRoom/ChatRoomHeader";
+import Toastify from "../../lib/Toastify";
+import { InitialDataState } from "../../redux/slice/InitialDataSlice";
+import ChatMessage from "./ChatRoom/ChatMessages";
+import { postReq } from "../../utils/api/api";
 
-const ChatRoom = ({ activeRoom }) => {
+const ChatRoom = () => {
   const divRef = useRef(null);
-  const { chats } = useSelector(InitialDataState);
+  const { chats, activeRoom } = useSelector(InitialDataState);
   const { ToastContainer, showErrorMessage } = Toastify();
-  const { emit } = useSocketConnection();
-
-  const { isLoading, isError, error, data } = UseRoomChat({
-    toggle: false,
-    id: activeRoom?._id,
-    page: 1,
-  });
 
   const chatMessages = useMemo(() => {
     if (!activeRoom) {
@@ -50,32 +39,28 @@ const ChatRoom = ({ activeRoom }) => {
     },
   });
 
-  if (isError) {
-    return <p>{error.message}</p>;
-  }
+  const sendChat = async () => {
+    try {
+      const { inputChat } = getValues();
 
-  const sendChat = () => {
-    const { inputChat } = getValues();
+      if (!inputChat) return;
 
-    if (inputChat) {
       const res = {
         message: inputChat,
         room: activeRoom._id,
       };
 
-      emit("chatMessage", res, (response) => {
-        if (response.status !== "ok") {
-          showErrorMessage({ message: response.error });
-        }
-      });
-
+      const sendChatMsg = await postReq("/chat", res);
+      console.log("sendChatMsg", sendChatMsg);
       reset({ inputChat: "" });
+    } catch (error) {
+      showErrorMessage({ message: error.message });
     }
   };
 
-  const sendChatFromInput = (e) => {
+  const sendChatFromInput = async (e) => {
     if (e.key === "Enter") {
-      sendChat();
+      await sendChat();
     }
   };
 
@@ -87,19 +72,11 @@ const ChatRoom = ({ activeRoom }) => {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="w-full h-full">
         {/* MARK: HEADER */}
-        <ChatRoomHeader activeRoom={activeRoom} chatMessages={chatMessages} />
+        <ChatRoomHeader chatMessages={chatMessages} />
 
         {/* MARK: CHAT MESSAGES AREA */}
         <div
@@ -144,7 +121,7 @@ const ChatRoom = ({ activeRoom }) => {
             />
           </div>
           <div
-            // disabled={!getValues("inputChat")}
+            disabled={getValues().inputChat === ""}
             onClick={() => sendChat()}
             className="cursor-pointer bg-color_1 text-color_4 border px-5 py-1 rounded-3xl"
           >

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Loading from "../../components/Loading";
 import environment from "../../utils/environment";
 import { postAuthReq } from "../../utils/api/authApi";
 import { useMutation } from "@tanstack/react-query";
 import validator from "validator";
 import createCookies from "../../utils/crypto/createCookies";
 import { ToastContainer, toast } from "react-toastify";
+import Loading from "../../containers/Loading";
+
 import "react-toastify/dist/ReactToastify.css";
 const SERVER_URL = environment.SERVER_URL;
 

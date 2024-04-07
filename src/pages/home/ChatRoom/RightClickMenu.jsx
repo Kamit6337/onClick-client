@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 
 import { useDispatch } from "react-redux";
-import OnClickOutside from "../../../../../lib/onClickOutside";
-import { toggleChatOptionOnRightClick } from "../../../../../redux/slice/toggleSlice";
-import { deleteChatReducer } from "../../../../../redux/slice/mutationSlice";
+import OnClickOutside from "../../../lib/onClickOutside";
+import { toggleChatOptionOnRightClick } from "../../../redux/slice/toggleSlice";
 
 const RightClickMenu = ({ data }) => {
   const dispatch = useDispatch();
@@ -21,7 +20,6 @@ const RightClickMenu = ({ data }) => {
 
   const deleteChat = () => {
     closeOptions();
-    dispatch(deleteChatReducer({ bool: true, data: data?.chatId }));
   };
 
   const y = data?.y;

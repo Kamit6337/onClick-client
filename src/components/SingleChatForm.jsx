@@ -1,32 +1,37 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSingleChatForm } from "../redux/slice/toggleSlice";
-import UseAllUser from "../hooks/query/UseAllUser";
 import { useMemo, useState } from "react";
 import UseContinuousCheck from "../hooks/query/UseContinuousCheck";
 import environment from "../utils/environment";
 import { postReq } from "../utils/api/api";
 import { InitialDataState } from "../redux/slice/InitialDataSlice";
+import { AllUserState } from "../redux/slice/AllUserSlice";
 
 const SingleChatForm = () => {
   const dispatch = useDispatch();
-  const { data } = UseAllUser(true);
+  const { allUsers } = useSelector(AllUserState);
   const { rooms } = useSelector(InitialDataState);
   const { data: user } = UseContinuousCheck();
   const [userSelected, setUserSelected] = useState(null);
 
-  const filteredAllUser = useMemo(() => {
-    if (!data || !rooms) return [];
+  console.log("allUsers", allUsers);
 
-    const filterSingleRooms = rooms.filter((room) => !room.isGroupChat);
-    let filterUsers = data.data.filter((obj) => obj._id !== user._id);
-    filterUsers = filterUsers.filter(
-      (obj) =>
-        !filterSingleRooms.find((room) =>
-          room.members.find((member) => member._id === obj._id)
-        )
-    );
+  const filteredAllUser = useMemo(() => {
+    if (!allUsers) return [];
+
+    // const filterSingleRooms = rooms.filter((room) => !room.isGroupChat);
+
+    let filterUsers = allUsers.filter((obj) => obj._id !== user._id);
+
+    // filterUsers = filterUsers.filter(
+    //   (obj) =>
+    //     !filterSingleRooms.find((room) =>
+    //       room.members.find((member) => member._id === obj._id)
+    //     )
+    // );
+
     return filterUsers;
-  }, [data, user, rooms]);
+  }, [allUsers, user]);
 
   const [searchedUser, setSearchedUser] = useState([]);
   const [value, setValue] = useState("");
@@ -63,7 +68,7 @@ const SingleChatForm = () => {
   };
 
   const handleCancel = () => {
-    dispatch(toggleSingleChatForm(false));
+    dispatch(toggleSingleChatForm({ bool: false }));
   };
 
   return (

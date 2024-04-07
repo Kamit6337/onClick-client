@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import SelectImageFile from "../lib/SelectImageFile";
+import SelectImageFile from "./SelectImageFile";
 
 const ImageComp = () => {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -35,9 +35,3 @@ const ImageComp = () => {
 };
 
 export default ImageComp;
-
-// {isPending && (
-//     <div className="absolute top-0 border border-color_4 rounded-full w-full h-full backdrop-blur-sm z-10 ">
-//       <Loading hScreen={false} small={true} />
-//     </div>
-//   )}

@@ -1,57 +1,17 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
-import OnClickOutside from "../lib/onClickOutside";
-import { useForm } from "react-hook-form";
-import UseAllUser from "../hooks/query/UseAllUser";
-import environment from "../utils/environment";
-import UseSingleRoomCreation from "../hooks/mutation/SingleRoomCreation";
-import Toastify from "../lib/Toastify";
+import { useState } from "react";
 import { Icons } from "../assets/icons";
 import { useDispatch } from "react-redux";
 import { toggleSideNavbar } from "../redux/slice/toggleSlice";
 
 const SearchUsers = ({ searchValue }) => {
   const dispatch = useDispatch();
-  const [searchUsers, setSearchUsers] = useState([]);
-  const { data: users } = UseAllUser(true);
-  const { isError, error, mutate, isSuccess } = UseSingleRoomCreation();
-  const { ToastContainer, showErrorMessage, showSuccessMessage } = Toastify();
   const [value, setValue] = useState("");
-
-  const { register, reset } = useForm({
-    defaultValues: {
-      searchName: "",
-    },
-  });
-
-  const success = () => {
-    reset({ searchName: "" });
-    setSearchUsers([]);
-  };
-
-  const { ref: divRef } = OnClickOutside(success);
-
-  useEffect(() => {
-    if (isError) {
-      showErrorMessage({ message: error.message });
-    }
-  }, [isError, error, showErrorMessage]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      showSuccessMessage({ message: "Chat created" });
-    }
-  }, [isSuccess, showSuccessMessage]);
 
   const handleSearch = (e) => {
     const { value } = e.target;
     setValue(value);
     searchValue(value);
-  };
-
-  const handleUser = (user) => {
-    setSearchUsers([]);
-    mutate(user._id);
   };
 
   return (

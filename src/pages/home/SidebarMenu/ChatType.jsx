@@ -1,4 +1,4 @@
-import SpeedDial from "../../../../../components/SpeedDial";
+import SpeedDial from "../../../components/SpeedDial";
 import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import Groups2OutlinedIcon from "@mui/icons-material/Groups2Outlined";
@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import {
   toggleGroupChatForm,
   toggleSingleChatForm,
-} from "../../../../../redux/slice/toggleSlice";
+} from "../../../redux/slice/toggleSlice";
 const actions = [
   { id: 1, icon: <FileCopyIcon />, name: "Copy" },
   { id: 2, icon: <SaveIcon />, name: "Save" },
@@ -20,12 +20,12 @@ const ChatType = () => {
 
   const handleOptionClick = (id) => {
     if (id === 3) {
-      dispatch(toggleSingleChatForm(true));
+      dispatch(toggleSingleChatForm({ bool: true }));
       return;
     }
 
     if (id === 4) {
-      dispatch(toggleGroupChatForm(true));
+      dispatch(toggleGroupChatForm({ bool: true }));
       return;
     }
   };

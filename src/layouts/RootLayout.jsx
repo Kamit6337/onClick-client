@@ -3,38 +3,42 @@ import { useEffect } from "react";
 import UseContinuousCheck from "../hooks/query/UseContinuousCheck";
 import UseAllUser from "../hooks/query/UseAllUser";
 import UseUserRooms from "../hooks/query/UseUserRooms";
-import Loading from "../components/Loading";
+import Loading from "../containers/Loading";
 import GlobalForm from "../containers/GlobalForm";
 import SideNavbar from "../containers/SideNavbar";
+import UseRooms from "../hooks/query/UseRooms";
 
 const RootLayout = () => {
   const navigate = useNavigate();
 
-  const {
-    isError,
-    error,
-    isSuccess,
-    data: user,
-    isLoading,
-  } = UseContinuousCheck();
+  const { isError, error, isSuccess, isLoading } = UseContinuousCheck();
 
-  const { isLoading: usersIsLoading, isError: usersIsError } =
+  const { isLoading: usersIsLoading, error: usersError } =
     UseAllUser(isSuccess);
 
-  const { isLoading: roomsIsLoading, isError: roomssIsError } =
+  const { isLoading: userRoomsIsLoading, error: userRoomsError } =
     UseUserRooms(isSuccess);
 
-  useEffect(() => {
-    if (isError || usersIsError || roomssIsError) {
-      navigate(`/login?msg=${error.message}`);
-    }
-  }, [isError, usersIsError, roomssIsError, error, navigate]);
+  const { isLoading: roomsIsLoading, error: roomsError } = UseRooms(isSuccess);
 
-  if (isLoading || usersIsLoading || roomsIsLoading) {
+  useEffect(() => {
+    if (isError || usersError || userRoomsError || roomsError) {
+      navigate(
+        `/login?msg=${
+          error.message ||
+          usersError.message ||
+          userRoomsError.message ||
+          roomsError.message
+        }`
+      );
+    }
+  }, [isError, usersError, userRoomsError, roomsError, error, navigate]);
+
+  if (isLoading || usersIsLoading || roomsIsLoading || userRoomsIsLoading) {
     return <Loading />;
   }
 
-  if (!user) return;
+  if (isError || usersError || userRoomsError || roomsError) return;
 
   return (
     <main className="max-w-full h-screen">

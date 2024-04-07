@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
-import { Icons } from "../../../../../assets/icons";
-import DownloadFile from "../../../../../hooks/query/DownloadFile";
-import UseContinuousCheck from "../../../../../hooks/query/UseContinuousCheck";
-import environment from "../../../../../utils/environment";
-import changeDate from "../../../../../utils/javaScript/changeDate";
+import { Icons } from "../../../assets/icons";
+import DownloadFile from "../../../hooks/query/DownloadFile";
+import UseContinuousCheck from "../../../hooks/query/UseContinuousCheck";
+import environment from "../../../utils/environment";
+import changeDate from "../../../utils/javaScript/changeDate";
 import { useDispatch } from "react-redux";
-import { toggleChatOptionOnRightClick } from "../../../../../redux/slice/toggleSlice";
-import bytesToKbMb from "../../../../../utils/javaScript/bytesToKbMb";
-import DownloadImage from "../../../../../hooks/query/DownloadImage";
+import { toggleChatOptionOnRightClick } from "../../../redux/slice/toggleSlice";
+import bytesToKbMb from "../../../utils/javaScript/bytesToKbMb";
+import DownloadImage from "../../../hooks/query/DownloadImage";
 
 const SERVER_URL = environment.SERVER_URL;
 

@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
 import { getReq } from "../../utils/api/api";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { initialRoomsAndChats } from "../../redux/slice/InitialDataSlice";
 
-const UseUserRooms = (isSuccess = false) => {
+const UseRooms = (isSuccess = false) => {
   const dispatch = useDispatch();
 
   const query = useQuery({
     queryKey: ["fetchRooms"],
-    queryFn: () => getReq("/userRoom"),
+    queryFn: () => getReq("/room"),
     enabled: isSuccess,
     staleTime: Infinity,
   });
@@ -23,4 +23,4 @@ const UseUserRooms = (isSuccess = false) => {
   return query;
 };
 
-export default UseUserRooms;
+export default UseRooms;

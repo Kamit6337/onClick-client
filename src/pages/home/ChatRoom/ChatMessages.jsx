@@ -1,5 +1,5 @@
-import UseContinuousCheck from "../../../../../hooks/query/UseContinuousCheck";
-import changeDate from "../../../../../utils/javaScript/changeDate";
+import UseContinuousCheck from "../../../hooks/query/UseContinuousCheck";
+import changeDate from "../../../utils/javaScript/changeDate";
 
 /* eslint-disable react/prop-types */
 const ChatMessages = ({ chat, isGroupChat = false }) => {

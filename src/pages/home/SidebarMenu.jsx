@@ -1,16 +1,27 @@
 /* eslint-disable react/prop-types */
-import UseContinuousCheck from "../../../../hooks/query/UseContinuousCheck";
-import ChatType from "./components/ChatType";
-import environment from "../../../../utils/environment";
+import UseContinuousCheck from "../../hooks/query/UseContinuousCheck";
+import ChatType from "./SidebarMenu/ChatType";
+import environment from "../../utils/environment";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  InitialDataState,
+  setActiveRoom,
+} from "../../redux/slice/InitialDataSlice";
 
 const SERVER_URL = environment.SERVER_URL;
 
-const SidebarMenu = ({ rooms, activeRoomSelected, activeRoom }) => {
-  const { data: user } = UseContinuousCheck(true);
+const SidebarMenu = ({ rooms }) => {
+  const dispatch = useDispatch();
+  const { data: user } = UseContinuousCheck();
+  const { activeRoom } = useSelector(InitialDataState);
+
+  const activeRoomSelected = (room) => {
+    dispatch(setActiveRoom(room));
+  };
 
   return (
     <div className="relative w-full h-full ">
-      {rooms.length > 0 ? (
+      {rooms?.length > 0 ? (
         rooms.map((room, i) => {
           const { _id, name, members, photo, isGroupChat } = room;
 

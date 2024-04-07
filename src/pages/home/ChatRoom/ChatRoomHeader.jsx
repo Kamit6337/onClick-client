@@ -1,19 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { resetActiveRoom } from "../../../../../redux/slice/roomSlice";
-import { Icons } from "../../../../../assets/icons";
-import UseContinuousCheck from "../../../../../hooks/query/UseContinuousCheck";
-import OnClickOutside from "../../../../../lib/onClickOutside";
-import { toggleUpdateGroupChatForm } from "../../../../../redux/slice/toggleSlice";
-import DeleteSingleChat from "../../../../../hooks/mutation/DeleteSingleChat";
-import DeleteGroupChat from "../../../../../hooks/mutation/DeleteGroupChat";
-import Toastify from "../../../../../lib/Toastify";
-import { deleteReq } from "../../../../../utils/api/api";
-import { deleteRoomWithItsChats } from "../../../../../redux/slice/InitialDataSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Icons } from "../../../assets/icons";
+import UseContinuousCheck from "../../../hooks/query/UseContinuousCheck";
+import OnClickOutside from "../../../lib/onClickOutside";
+import { toggleUpdateGroupChatForm } from "../../../redux/slice/toggleSlice";
+import DeleteSingleChat from "../../../hooks/mutation/DeleteSingleChat";
+import DeleteGroupChat from "../../../hooks/mutation/DeleteGroupChat";
+import Toastify from "../../../lib/Toastify";
+import { deleteReq } from "../../../utils/api/api";
+import { InitialDataState } from "../../../redux/slice/InitialDataSlice";
 
-const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
+const ChatRoomHeader = ({ chatMessages }) => {
   const dispatch = useDispatch();
+  const { activeRoom } = useSelector(InitialDataState);
   const { data: user } = UseContinuousCheck(true);
   const [toggleOptions, setToggleOptions] = useState(false);
   const [deleteOption, setDeleteOption] = useState("Delete");
@@ -21,9 +21,7 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
 
   const filterChatMessages = useMemo(() => {
     if (!chatMessages) return [];
-
     const filter = chatMessages.filter((chat) => !chat.isLabel);
-
     return filter;
   }, [chatMessages]);
 
@@ -40,14 +38,12 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
   }, [activeRoom, user]);
 
   const handleDelete = async () => {
-    console.log("delete room");
     try {
       await deleteReq("/room/single", {
         id: activeRoom._id,
       });
-      dispatch(deleteRoomWithItsChats(activeRoom._id));
     } catch (error) {
-      console.log("error in deleting room", error);
+      showErrorMessage({ message: error.message });
     }
   };
 
@@ -59,7 +55,7 @@ const ChatRoomHeader = ({ activeRoom, chatMessages }) => {
 
   return (
     <>
-      <div className="relative w-full h-14 bottom_box_shadow flex justify-between items-center items-center px-4 text-color_4 border-b border-color_3">
+      <div className="relative w-full h-14 bottom_box_shadow flex justify-between items-center px-4 text-color_4 border-b border-color_3">
         {/* MARK: LEFT SIDE - NAME OR GROUP NAME */}
         {activeRoom?.isGroupChat ? (
           <div className="flex gap-2 items-center w-60">

@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import OnClickOutside from "../lib/onClickOutside";
 import {
   toggleInitialState,
   toggleSideNavbar,

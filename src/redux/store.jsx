@@ -1,17 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { RoomReducer } from "./slice/roomSlice";
 import { ToggleReducer } from "./slice/toggleSlice";
-import { MutationReducer } from "./slice/mutationSlice";
-import { SocketReducer } from "./slice/SocketSlice";
 import { InitialDataReducer } from "./slice/InitialDataSlice";
+import { AllUserReducer } from "./slice/AllUserSlice";
+import { UserRoomReducer } from "./slice/UserRoomSlice";
 
 export const store = configureStore({
   reducer: {
     initialData: InitialDataReducer,
-    rooms: RoomReducer,
+    allUsers: AllUserReducer,
+    userRooms: UserRoomReducer,
     toggle: ToggleReducer,
-    mutation: MutationReducer,
-    socket: SocketReducer,
   },
   // middleware: (getDefaultMiddleware) =>
   //   getDefaultMiddleware({
